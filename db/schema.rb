@@ -10,12 +10,29 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170619190457) do
+ActiveRecord::Schema.define(version: 20170619201412) do
+
+  create_table "loyalty_ranks", force: :cascade do |t|
+    t.string   "name",                             null: false
+    t.integer  "required_rides_count", default: 0, null: false
+    t.datetime "created_at",                       null: false
+    t.datetime "updated_at",                       null: false
+  end
+
+  create_table "rides", force: :cascade do |t|
+    t.integer  "price",      null: false
+    t.integer  "user_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["user_id"], name: "index_rides_on_user_id"
+  end
 
   create_table "users", force: :cascade do |t|
-    t.integer  "loyalty_points", default: 0, null: false
-    t.datetime "created_at",                 null: false
-    t.datetime "updated_at",                 null: false
+    t.integer  "loyalty_points",  default: 0, null: false
+    t.datetime "created_at",                  null: false
+    t.datetime "updated_at",                  null: false
+    t.integer  "loyalty_rank_id"
+    t.index ["loyalty_rank_id"], name: "index_users_on_loyalty_rank_id"
   end
 
 end

@@ -1,0 +1,21 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+first_ride:
+  price: 11
+  user: big_user
+
+second_ride:
+  price: 22
+  user: big_user
+
+third_ride:
+  price: 14
+  user: big_user
+
+fourth_ride:
+  price: 56
+  user: big_user
+
+fith_ride:
+  price: 56
+  user: big_user

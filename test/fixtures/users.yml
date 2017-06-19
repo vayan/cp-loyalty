@@ -2,4 +2,12 @@
 
 first_user:
   loyalty_points: 242
+  loyalty_rank: bronze
 
+big_user:
+  loyalty_points: 0
+  loyalty_rank: bronze
+
+new_user:
+  loyalty_points: 0
+  loyalty_rank: bronze
