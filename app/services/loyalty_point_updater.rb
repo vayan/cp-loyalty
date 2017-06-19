@@ -9,7 +9,7 @@ class LoyaltyPointUpdater
   end
 
   def call
-    new_points = @ride.price
+    new_points = @ride.price * @user.loyalty_rank.multiplier
     @user.update_attributes(loyalty_points: @user.loyalty_points + new_points)
   end
 end

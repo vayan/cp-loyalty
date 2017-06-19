@@ -10,13 +10,14 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170619201412) do
+ActiveRecord::Schema.define(version: 20170619220100) do
 
   create_table "loyalty_ranks", force: :cascade do |t|
     t.string   "name",                             null: false
     t.integer  "required_rides_count", default: 0, null: false
     t.datetime "created_at",                       null: false
     t.datetime "updated_at",                       null: false
+    t.integer  "multiplier",           default: 0, null: false
   end
 
   create_table "rides", force: :cascade do |t|

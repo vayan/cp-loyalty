@@ -37,4 +37,12 @@ class RidesInteractionsTest < ActionDispatch::IntegrationTest
     assert_response :success
     assert_equal 84, json_response['loyalty_points']
   end
+
+  test 'raise users loyalty points according to his rank' do
+    post user_rides_path(users(:big_user).id), params: { ride: { price: 42 } }
+    assert_response :redirect
+    follow_redirect!
+    assert_response :success
+    assert_equal 3 * 42, json_response['loyalty_points']
+  end
 end

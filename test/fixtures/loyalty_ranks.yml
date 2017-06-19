@@ -1,17 +1,21 @@
 # Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 
 bronze:
+  multiplier: 1
   name: bronze
   required_rides_count: 0
 
 silver:
+  multiplier: 3
   name: silver
   required_rides_count: 5
 
 gold:
+  multiplier: 5
   name: gold
   required_rides_count: 15
 
 platinum:
+  multiplier: 10
   name: platinum
   required_rides_count: 30
