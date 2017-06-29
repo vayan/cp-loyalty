@@ -26,7 +26,16 @@ func (a *App) Initialize(dbName string) {
 		panic("Failed to connect database")
 	}
 
+	a.DB.DropTable(&LoyaltyRank{})
+
 	a.DB.AutoMigrate(&User{})
+	a.DB.AutoMigrate(&LoyaltyRank{})
+	a.DB.AutoMigrate(&Ride{})
+
+	a.DB.Create(&LoyaltyRank{Name: "bronze", RequiredRidesCount: 0})
+	a.DB.Create(&LoyaltyRank{Name: "silver", RequiredRidesCount: 5})
+	a.DB.Create(&LoyaltyRank{Name: "gold", RequiredRidesCount: 15})
+	a.DB.Create(&LoyaltyRank{Name: "platinum", RequiredRidesCount: 30})
 
 	a.Router = mux.NewRouter()
 	a.initializeRoutes()
@@ -54,8 +63,8 @@ func respondWithJSON(w http.ResponseWriter, code int, payload interface{}) {
 func (a *App) getUser(w http.ResponseWriter, r *http.Request) {
 	log.Printf("%s %s", r.Method, r.RequestURI)
 	vars := mux.Vars(r)
-	id, _ := strconv.Atoi(vars["id"])
-	user := fetchUser(id, a.DB)
+	id, _ := strconv.ParseInt(vars["id"], 10, 32)
+	user := FetchUser(uint(id), a.DB)
 	respondWithJSON(w, http.StatusOK, user)
 }
 
@@ -68,6 +77,7 @@ func (a *App) createUser(w http.ResponseWriter, r *http.Request) {
 		respondWithError(w, http.StatusBadRequest, "Invalid Payload")
 		return
 	}
+	user.SetBaseRank(a.DB)
 	if user.Valid() {
 		user.Save(a.DB)
 	} else {
@@ -77,7 +87,28 @@ func (a *App) createUser(w http.ResponseWriter, r *http.Request) {
 	respondWithJSON(w, http.StatusOK, user)
 }
 
+func (a *App) createRide(w http.ResponseWriter, r *http.Request) {
+	var ride Ride
+	log.Printf("%s %s", r.Method, r.RequestURI)
+	decoder := json.NewDecoder(r.Body)
+	err := decoder.Decode(&ride)
+	if err != nil {
+		respondWithError(w, http.StatusBadRequest, "Invalid Payload")
+		return
+	}
+	if ride.Valid(a.DB) {
+		ride.Save(a.DB)
+		ride.User.UpdateLoyaltyPoint(ride, a.DB)
+		ride.User.UpdateLoyaltyRank(a.DB)
+	} else {
+		respondWithError(w, http.StatusBadRequest, "Invalid Params")
+		return
+	}
+	respondWithJSON(w, http.StatusOK, ride)
+}
+
 func (a *App) initializeRoutes() {
 	a.Router.HandleFunc("/users/{id:[0-9]+}", a.getUser).Methods("GET")
 	a.Router.HandleFunc("/users", a.createUser).Methods("POST")
+	a.Router.HandleFunc("/rides", a.createRide).Methods("POST")
 }

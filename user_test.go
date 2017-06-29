@@ -13,7 +13,7 @@ import (
 	. "github.com/onsi/gomega"
 )
 
-var _ = Describe("App", func() {
+var _ = Describe("User", func() {
 	var request *http.Request
 	var recorder *httptest.ResponseRecorder
 	var user User
@@ -23,7 +23,6 @@ var _ = Describe("App", func() {
 		recorder = httptest.NewRecorder()
 		a = App{}
 		a.Initialize("test.db")
-		a.DB.AutoMigrate(&User{})
 	})
 
 	AfterEach(func() {
@@ -44,9 +43,8 @@ var _ = Describe("App", func() {
 		})
 
 		It("returns a json serialized user", func() {
-			marshal_user, _ := json.Marshal(user)
 			a.Router.ServeHTTP(recorder, request)
-			Expect(recorder.Body.String()).To(Equal(string(marshal_user)))
+			Expect(recorder.Body.String()).To(ContainSubstring("\"loyalty_point\":0"))
 		})
 	})
 
