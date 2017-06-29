@@ -89,17 +89,24 @@ func (a *App) createUser(w http.ResponseWriter, r *http.Request) {
 
 func (a *App) createRide(w http.ResponseWriter, r *http.Request) {
 	var ride Ride
+	var user User
 	log.Printf("%s %s", r.Method, r.RequestURI)
+
+	vars := mux.Vars(r)
+	id, _ := strconv.ParseInt(vars["id"], 10, 32)
+	user = FetchUser(uint(id), a.DB)
+
 	decoder := json.NewDecoder(r.Body)
 	err := decoder.Decode(&ride)
 	if err != nil {
 		respondWithError(w, http.StatusBadRequest, "Invalid Payload")
 		return
 	}
+	ride.User = user
 	if ride.Valid(a.DB) {
 		ride.Save(a.DB)
-		ride.User.UpdateLoyaltyPoint(ride, a.DB)
 		ride.User.UpdateLoyaltyRank(a.DB)
+		ride.User.UpdateLoyaltyPoint(ride, a.DB)
 	} else {
 		respondWithError(w, http.StatusBadRequest, "Invalid Params")
 		return
@@ -108,7 +115,7 @@ func (a *App) createRide(w http.ResponseWriter, r *http.Request) {
 }
 
 func (a *App) initializeRoutes() {
+	a.Router.HandleFunc("/users/{id:[0-9]+}/rides", a.createRide).Methods("POST")
 	a.Router.HandleFunc("/users/{id:[0-9]+}", a.getUser).Methods("GET")
 	a.Router.HandleFunc("/users", a.createUser).Methods("POST")
-	a.Router.HandleFunc("/rides", a.createRide).Methods("POST")
 }

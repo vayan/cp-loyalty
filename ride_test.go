@@ -3,6 +3,7 @@ package main_test
 import (
 	"bytes"
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"net/http/httptest"
 
@@ -36,9 +37,10 @@ var _ = Describe("Ride", func() {
 	Describe("POST /rides", func() {
 		Context("with valid JSON", func() {
 			BeforeEach(func() {
+				route := fmt.Sprintf("/users/%d/rides", baseUser.ID)
 				ride = Ride{Price: 33, User: baseUser}
 				body, _ := json.Marshal(ride)
-				request, _ = http.NewRequest("POST", "/rides", bytes.NewReader(body))
+				request, _ = http.NewRequest("POST", route, bytes.NewReader(body))
 			})
 
 			It("returns a status code of 200", func() {
@@ -72,13 +74,9 @@ var _ = Describe("Ride", func() {
 			})
 
 			It("raises the user loyalty points according to his rank", func() {
-				var newRank LoyaltyRank
-				a.DB.Where(&LoyaltyRank{Name: "silver"}).First(&newRank)
-				baseUser.LoyaltyRank = newRank
-
-				ride = Ride{Price: 33, User: baseUser}
-				body, _ := json.Marshal(ride)
-				request, _ = http.NewRequest("POST", "/rides", bytes.NewReader(body))
+				for i := 1; i < 6; i++ {
+					a.DB.Create(&Ride{Price: 1, User: baseUser})
+				}
 
 				a.Router.ServeHTTP(recorder, request)
 				a.DB.First(&baseUser, baseUser.ID)
@@ -88,9 +86,10 @@ var _ = Describe("Ride", func() {
 
 		Context("with invalid JSON", func() {
 			BeforeEach(func() {
+				route := fmt.Sprintf("/users/%d/rides", baseUser.ID)
 				ride = Ride{Price: 0, User: baseUser}
 				body, _ := json.Marshal(ride)
-				request, _ = http.NewRequest("POST", "/rides", bytes.NewReader(body))
+				request, _ = http.NewRequest("POST", route, bytes.NewReader(body))
 			})
 
 			It("returns a status code of 400", func() {
