@@ -20,6 +20,7 @@ func (u *Ride) Valid(db *gorm.DB) bool {
 
 func fetchRide(id int, db *gorm.DB) Ride {
 	var Ride Ride
+
 	db.First(&Ride, id)
 	return Ride
 }

@@ -21,6 +21,7 @@ func (u *LoyaltyRank) Valid() bool {
 
 func fetchLoyaltyRank(id int, db *gorm.DB) LoyaltyRank {
 	var LoyaltyRank LoyaltyRank
+
 	db.First(&LoyaltyRank, id)
 	return LoyaltyRank
 }

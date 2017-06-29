@@ -65,9 +65,7 @@ var _ = Describe("Ride", func() {
 					a.DB.Create(&Ride{Price: i * 11, User: baseUser})
 				}
 				user := FetchUser(baseUser.ID, a.DB)
-
 				Expect(user.LoyaltyRank.Name).To(Equal("bronze"))
-
 				a.Router.ServeHTTP(recorder, request)
 				user = FetchUser(baseUser.ID, a.DB)
 				Expect(user.LoyaltyRank.Name).To(Equal("silver"))
@@ -77,7 +75,6 @@ var _ = Describe("Ride", func() {
 				for i := 1; i < 6; i++ {
 					a.DB.Create(&Ride{Price: 1, User: baseUser})
 				}
-
 				a.Router.ServeHTTP(recorder, request)
 				a.DB.First(&baseUser, baseUser.ID)
 				Expect(baseUser.LoyaltyPoint).To(Equal(99))

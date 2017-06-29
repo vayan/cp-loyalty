@@ -24,9 +24,7 @@ func FetchUser(id uint, db *gorm.DB) User {
 	var user User
 
 	db.Preload("LoyaltyRank").Preload("Rides").First(&user, id)
-
 	user.RidesLeft = user.RidesLeftBeforeNextRank(db)
-
 	return user
 }
 
@@ -44,7 +42,6 @@ func (u *User) SetBaseRank(db *gorm.DB) {
 	var baseRank LoyaltyRank
 
 	db.Where(&LoyaltyRank{Name: "bronze"}).First(&baseRank)
-
 	u.LoyaltyRank = baseRank
 }
 
@@ -53,11 +50,9 @@ func (u *User) UpdateLoyaltyRank(db *gorm.DB) {
 	var newRank LoyaltyRank
 
 	*u = FetchUser(u.ID, db)
-
 	db.Where("required_rides_count <= ?", len(u.Rides)).
 		Order("required_rides_count desc").
 		First(&newRank)
-
 	if newRank != u.LoyaltyRank {
 		u.LoyaltyRank = newRank
 		u.Save(db)
@@ -75,10 +70,8 @@ func (u *User) RidesLeftBeforeNextRank(db *gorm.DB) int {
 	var nextRank LoyaltyRank
 
 	RidesCount := len(u.Rides)
-
 	db.Where("required_rides_count > ?", RidesCount).
 		Order("required_rides_count asc").
 		First(&nextRank)
-
 	return nextRank.RequiredRidesCount - RidesCount
 }
