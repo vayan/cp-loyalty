@@ -66,7 +66,7 @@ func (u *User) UpdateLoyaltyRank(db *gorm.DB) {
 
 //UpdateLoyaltyPoint checks if we need to update the user loyalty points
 func (u *User) UpdateLoyaltyPoint(ride Ride, db *gorm.DB) {
-	u.LoyaltyPoint += ride.Price
+	u.LoyaltyPoint += (ride.Price * u.LoyaltyRank.Multiplier)
 	u.Save(db)
 }
 

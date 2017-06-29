@@ -32,10 +32,10 @@ func (a *App) Initialize(dbName string) {
 	a.DB.AutoMigrate(&LoyaltyRank{})
 	a.DB.AutoMigrate(&Ride{})
 
-	a.DB.Create(&LoyaltyRank{Name: "bronze", RequiredRidesCount: 0})
-	a.DB.Create(&LoyaltyRank{Name: "silver", RequiredRidesCount: 5})
-	a.DB.Create(&LoyaltyRank{Name: "gold", RequiredRidesCount: 15})
-	a.DB.Create(&LoyaltyRank{Name: "platinum", RequiredRidesCount: 30})
+	a.DB.Create(&LoyaltyRank{Name: "bronze", RequiredRidesCount: 0, Multiplier: 1})
+	a.DB.Create(&LoyaltyRank{Name: "silver", RequiredRidesCount: 5, Multiplier: 3})
+	a.DB.Create(&LoyaltyRank{Name: "gold", RequiredRidesCount: 15, Multiplier: 5})
+	a.DB.Create(&LoyaltyRank{Name: "platinum", RequiredRidesCount: 30, Multiplier: 10})
 
 	a.Router = mux.NewRouter()
 	a.initializeRoutes()

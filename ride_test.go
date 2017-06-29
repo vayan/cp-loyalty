@@ -70,6 +70,20 @@ var _ = Describe("Ride", func() {
 				user = FetchUser(baseUser.ID, a.DB)
 				Expect(user.LoyaltyRank.Name).To(Equal("silver"))
 			})
+
+			It("raises the user loyalty points according to his rank", func() {
+				var newRank LoyaltyRank
+				a.DB.Where(&LoyaltyRank{Name: "silver"}).First(&newRank)
+				baseUser.LoyaltyRank = newRank
+
+				ride = Ride{Price: 33, User: baseUser}
+				body, _ := json.Marshal(ride)
+				request, _ = http.NewRequest("POST", "/rides", bytes.NewReader(body))
+
+				a.Router.ServeHTTP(recorder, request)
+				a.DB.First(&baseUser, baseUser.ID)
+				Expect(baseUser.LoyaltyPoint).To(Equal(99))
+			})
 		})
 
 		Context("with invalid JSON", func() {
